@@ -25,6 +25,33 @@ class WC_Unit_Test_Case extends WP_HTTP_TestCase {
 	protected $factory;
 
 	/**
+	 * @var bool True if the code hacker is temporarily disabled.
+	 */
+	private static $code_hacker_is_temporarily_disabled = false;
+
+	/**
+	 * Temporarily disable the code hacker.
+	 * Does nothing if the code hacker wasn't enabled.
+	 */
+	protected static function disable_code_hacker() {
+		if ( CodeHacker::is_enabled() ) {
+			CodeHacker::disable();
+			self::$code_hacker_is_temporarily_disabled = true;
+		}
+	}
+
+	/**
+	 * Re-enable the temporarily disabled code hacker.
+	 * Does nothing if the code hacker wasn't temporarily disabled.
+	 */
+	protected static function reenable_code_hacker() {
+		if ( self::$code_hacker_is_temporarily_disabled ) {
+			CodeHacker::enable();
+			self::$code_hacker_is_temporarily_disabled = false;
+		}
+	}
+
+	/**
 	 * Setup test case.
 	 *
 	 * @since 2.2
@@ -113,14 +140,10 @@ class WC_Unit_Test_Case extends WP_HTTP_TestCase {
 	 * @param string $dest The destination path.
 	 * @return bool true on success or false on failure.
 	 */
-	public function file_copy( $source, $dest ) {
-		if ( CodeHacker::is_enabled() ) {
-			CodeHacker::restore();
-			$result = copy( $source, $dest );
-			CodeHacker::enable();
-			return $result;
-		} else {
-			return copy( $source, $dest );
-		}
+	public static function file_copy( $source, $dest ) {
+		self::disable_code_hacker();
+		$result = copy( $source, $dest );
+		self::reenable_code_hacker();
+		return $result;
 	}
 }

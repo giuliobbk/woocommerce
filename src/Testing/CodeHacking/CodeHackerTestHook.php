@@ -65,7 +65,7 @@ use Exception;
 final class CodeHackerTestHook implements BeforeTestHook, AfterTestHook {
 
 	public function executeAfterTest( string $test, float $time ): void {
-		CodeHacker::restore();
+		CodeHacker::disable();
 	}
 
 	public function executeBeforeTest( string $test ): void {

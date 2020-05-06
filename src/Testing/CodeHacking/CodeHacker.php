@@ -84,7 +84,7 @@ class CodeHacker {
 	/**
 	 * Disable the code hacker.
 	 */
-	public static function restore() {
+	public static function disable() {
 		if ( self::$enabled ) {
 			stream_wrapper_restore( self::PROTOCOL );
 			self::$enabled = false;
